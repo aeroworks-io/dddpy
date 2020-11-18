@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ddd"
+name = "dddpy"
 version = "0.0.1"
 description = "A framework to support ddd python projects"
 authors = ["Yuichiro Smith <contact@yu-smith.com>"]
