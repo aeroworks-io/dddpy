@@ -1,2 +1,2 @@
-# python-ddd
+# dddpy
 A Framework to support ddd python projects
