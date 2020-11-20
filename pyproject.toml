@@ -1,9 +1,31 @@
 [tool.poetry]
 name = "dddpy"
-version = "0.0.1"
+version = "0.1.0"
 description = "A framework to support ddd python projects"
 authors = ["Yuichiro Smith <contact@yu-smith.com>"]
 license = "Apache License 2.0"
+readme = "README.md"
+repository = "https://github.com/aeroworks-io/dddpy"
+keywords = ["DDD", "Domain"]
+classifiers = [
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/aeroworks-io/dddpy/issues"
+"Coverage Report" = "https://codecov.io/gh/aeroworks-io/dddpy/branch/main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
