@@ -1,30 +1,36 @@
-import uuid
-from abc import ABC, abstractmethod
-from typing import Any, Optional
-
-from pydantic import BaseModel, UUID4
-from pydantic.fields import FieldInfo as _FieldInfo, Undefined
-from pydantic.typing import NoArgAnyCallable
+from ulid import ULID
 
 
-class IDBase(ABC):
-    raw: Any
-
-    @classmethod
-    @abstractmethod
-    def generate(cls):
-        ...
+from ..common import BaseClass, PrimitiveBase
 
 
-class ID(BaseModel, IDBase):
-    raw: UUID4
+class ID(PrimitiveBase, ULID):
+    coerce = True
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}('{str(self)}')"
+
+    def __json__(self):
+        return str(self)
 
     @classmethod
-    def generate(cls):
-        return cls(raw=UUID4(str(uuid.uuid4())))
+    def validate(cls, v):
+        if isinstance(v, cls):
+            return v
+        if cls.coerce:
+            return cls.__restore__(v)
+        raise TypeError(f"expected {repr(v)} to be a instance of {cls}")
+
+    @classmethod
+    def __generate__(cls):
+        return cls()
+
+    @classmethod
+    def __restore__(cls, value):
+        return cls.from_str(str(value))
 
 
-class Entity(BaseModel):
+class Entity(BaseClass):
     id: ID
 
     def __eq__(self, other):
@@ -33,54 +39,6 @@ class Entity(BaseModel):
         return self.id == other.id
 
 
-class Value(BaseModel):
-    ...
-
-
-class FieldInfo(_FieldInfo):
-    ...
-
-
-# noinspection PyPep8Naming
-def Field(
-    default: Any = Undefined,
-    *,
-    default_factory: Optional[NoArgAnyCallable] = None,
-    alias: str = None,
-    title: str = None,
-    description: str = None,
-    const: bool = None,
-    gt: float = None,
-    ge: float = None,
-    lt: float = None,
-    le: float = None,
-    multiple_of: float = None,
-    min_items: int = None,
-    max_items: int = None,
-    min_length: int = None,
-    max_length: int = None,
-    regex: str = None,
-    **extra: Any,
-) -> Any:
-    if default is not Undefined and default_factory is not None:
-        raise ValueError('cannot specify both default and default_factory')
-
-    return FieldInfo(
-        default,
-        default_factory=default_factory,
-        alias=alias,
-        title=title,
-        description=description,
-        const=const,
-        gt=gt,
-        ge=ge,
-        lt=lt,
-        le=le,
-        multiple_of=multiple_of,
-        min_items=min_items,
-        max_items=max_items,
-        min_length=min_length,
-        max_length=max_length,
-        regex=regex,
-        **extra,
-    )
+class Value(BaseClass):
+    class Config:
+        allow_mutation = False
