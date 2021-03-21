@@ -6,7 +6,12 @@ from pydantic.fields import FieldInfo as _FieldInfo, Undefined
 from pydantic.typing import NoArgAnyCallable
 from pydantic.utils import ROOT_KEY
 
-from .abstract import JsonSerializable, Restoreable, Generatable
+from .abstract import (
+    JsonSerializable,
+    Restoreable,
+    Generatable,
+    find_abstract_constraint,
+)
 from .primitive import PrimitiveBase, Primitive
 
 
@@ -37,7 +42,9 @@ class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
         return super().parse_obj(
             {
                 k: typ.__restore__(v)
-                if issubclass((typ := cls.__annotations__[k]), Restoreable)
+                if (
+                    typ := find_abstract_constraint(cls.__annotations__[k], Restoreable)
+                )
                 else v
                 for k, v in obj.items()
             }
@@ -56,8 +63,12 @@ class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
         return cls(
             **{
                 key: typ.__generate__()
-                for key, typ in cls.__annotations__.items()
-                if issubclass(typ, Generatable)
+                for key in cls.__annotations__
+                if (
+                    typ := find_abstract_constraint(
+                        cls.__annotations__[key], Generatable
+                    )
+                )
             }
         )
 

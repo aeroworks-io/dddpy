@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 from unittest import TestCase
 
 import pytest
@@ -20,7 +21,7 @@ class TestBase(TestCase):
 
         class A(BaseClass):
             x: X
-            y: Y
+            y: Optional[Y]
 
         self.cls = A
 
