@@ -11,6 +11,7 @@ from .abstract import (
     Restoreable,
     Generatable,
     find_abstract_constraint,
+    restore,
 )
 from .primitive import PrimitiveBase, Primitive
 
@@ -40,14 +41,7 @@ class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
                 )
                 raise ValidationError([ErrorWrapper(exc, loc=ROOT_KEY)], cls) from e
         return super().parse_obj(
-            {
-                k: typ.__restore__(v)
-                if (
-                    typ := find_abstract_constraint(cls.__annotations__[k], Restoreable)
-                )
-                else v
-                for k, v in obj.items()
-            }
+            {k: restore(cls.__annotations__[k], v) for k, v in obj.items()}
         )
 
     def __json__(self) -> str:
