@@ -40,6 +40,10 @@ class TestBase(TestCase):
         a = self.cls(x=1, y=2)
         assert a == self.cls.__restore__(json.loads(a.__json__()))
 
+    def test_restore_dict(self):
+        a = self.cls(x=1, y=2)
+        assert a == self.cls.__restore__(dict(x=1, y=2, unknown=3))
+
     def test_restore_obj(self):
         a = self.cls(x=1, y=2)
         assert a == self.cls.__restore__(a)

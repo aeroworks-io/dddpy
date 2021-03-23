@@ -41,7 +41,11 @@ class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
                 )
                 raise ValidationError([ErrorWrapper(exc, loc=ROOT_KEY)], cls) from e
         return super().parse_obj(
-            {k: restore(cls.__annotations__[k], v) for k, v in obj.items()}
+            {
+                k: restore(cls.__annotations__[k], v)
+                for k, v in obj.items()
+                if k in cls.__annotations__
+            }
         )
 
     def __json__(self) -> str:
