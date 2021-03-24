@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dddpy"
-version = "0.2.5"
+version = "0.3.0"
 description = "A framework to support ddd python projects"
 authors = ["Yuichiro Smith <contact@yu-smith.com>"]
 license = "Apache License 2.0"
