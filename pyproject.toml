@@ -33,6 +33,7 @@ pydantic = "^1.7.2"
 Inject = "^4.3.1"
 Faker = ">= 4.0.0, < 7.0.0"
 python-ulid = "^1.0.2"
+inflection = "^0.5.1"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

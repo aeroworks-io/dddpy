@@ -23,6 +23,7 @@ class TestBase(TestCase):
             x: X
             y: Optional[Y]
             z: Optional[int]
+            with_alias: Optional[int]
 
         self.cls = A
 
@@ -34,7 +35,7 @@ class TestBase(TestCase):
 
     def test_invalid_class_args(self):
         with pytest.raises(TypeError):
-            self.cls(1, 2, 3, 4)
+            self.cls(1, 2, 3, 4, 5)
 
     def test_restore(self):
         a = self.cls(x=1, y=2)
@@ -51,6 +52,10 @@ class TestBase(TestCase):
     def test_restore_optional(self):
         a = self.cls(x=1, y=None)
         assert a == self.cls.__restore__(a)
+
+    def test_restore_alias(self):
+        a = self.cls(x=1, with_alias=1)
+        assert a == self.cls.__restore__(dict(x=1, withAlias=1))
 
     def test_restore_normal(self):
         a = self.cls(x=1, y=None, z=1)

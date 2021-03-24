@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Type, Any, Optional
 
+from pydantic.fields import ModelField
+
 T = TypeVar("T")
 GenericAlias = type(Optional[int])
 
@@ -38,8 +40,17 @@ def find_abstract_constraint(annotation, abstract: Type[T]) -> Optional[T]:
         return None
 
 
-def restore(annotation, value):
-    if value is None and find_abstract_constraint(annotation, type(None)):
+def restore(fields, key, value):
+    field: ModelField = fields.get(key)
+    if not field:
+        for _field in fields.values():
+            if _field.alias == key:
+                field = _field
+                break
+        else:
+            return value
+    annotation = field.type_
+    if value is None and field.allow_none:
         return value
     if typ := find_abstract_constraint(annotation, Restoreable):
         return typ.__restore__(value)

@@ -1,5 +1,7 @@
+from functools import partial
 from typing import Any, Optional
 
+from inflection import camelize
 from pydantic import BaseModel, BaseConfig, ValidationError
 from pydantic.error_wrappers import ErrorWrapper
 from pydantic.fields import FieldInfo as _FieldInfo, Undefined
@@ -19,6 +21,8 @@ from .primitive import PrimitiveBase, Primitive
 class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
     class Config(BaseConfig):
         json_encoders = {JsonSerializable: lambda ins: ins.__json__()}
+        alias_generator = partial(camelize, uppercase_first_letter=False)
+        allow_population_by_field_name = True
 
     def __init__(self, *args, **kwargs):
         kw = tuple(self.__class__.__annotations__)
@@ -41,11 +45,7 @@ class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
                 )
                 raise ValidationError([ErrorWrapper(exc, loc=ROOT_KEY)], cls) from e
         return super().parse_obj(
-            {
-                k: restore(cls.__annotations__[k], v)
-                for k, v in obj.items()
-                if k in cls.__annotations__
-            }
+            {k: restore(cls.__fields__, k, v) for k, v in obj.items()}
         )
 
     def __json__(self) -> str:
