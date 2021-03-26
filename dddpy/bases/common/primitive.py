@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
+from typing import Dict, Any
 
 from .abstract import JsonSerializable, Restoreable, Generatable
 
 
 class PrimitiveBase(JsonSerializable, Restoreable, Generatable, ABC):
+    @classmethod
+    @abstractmethod
+    def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:
+        ...
+
     @classmethod
     def __get_validators__(cls):
         # one or more validators may be yielded which will be called in the
@@ -19,6 +25,11 @@ class PrimitiveBase(JsonSerializable, Restoreable, Generatable, ABC):
 
 class Primitive(PrimitiveBase):
     coerce = True
+
+    @classmethod
+    def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:
+        # using string as the default type as it's the natural type when encoding to JSON
+        field_schema.update(type="string")
 
     @classmethod
     def validate(cls, v):
