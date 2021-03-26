@@ -29,48 +29,35 @@ class IDTest(TestCase):
 
 
 class TestEntity(TestCase):
-    def test_entity_basic_generation(self):
+    def __init__(self, *args):
+        super().__init__(*args)
+
         class UserID(ID):
             ...
 
         class User(Entity):
+            """Class that represents a User"""
+
             id: UserID = Field(..., description="User's id")
             name: str = Field(..., description="Users's name")
 
-        assert User(id=UserID(), name="John Doe")
+        self.cls = User
+        self.id_cls = UserID
+
+    def test_entity_basic_generation(self):
+        assert self.cls(id=self.id_cls(), name="John Doe")
 
     def test_entity_comparison(self):
-        class UserID(ID):
-            ...
-
-        class User(Entity):
-            id: UserID = Field(..., description="User's id")
-            name: str = Field(..., description="Users's name")
-
-        user = User(id=UserID(), name="John Doe")
+        user = self.cls(id=self.id_cls(), name="John Doe")
         assert user == user
 
     def test_entity_comparison_false(self):
-        class UserID(ID):
-            ...
-
-        class User(Entity):
-            id: UserID = Field(..., description="User's id")
-            name: str = Field(..., description="Users's name")
-
-        user = User(id=UserID(), name="John Doe")
-        user2 = User(id=UserID(), name="Jane Doe")
+        user = self.cls(id=self.id_cls(), name="John Doe")
+        user2 = self.cls(id=self.id_cls(), name="Jane Doe")
         assert user != user2
 
     def test_entity_comparison_different(self):
-        class UserID(ID):
-            ...
-
-        class User(Entity):
-            id: UserID = Field(..., description="User's id")
-            name: str = Field(..., description="Users's name")
-
-        user = User(id=UserID(), name="John Doe")
+        user = self.cls(id=self.id_cls(), name="John Doe")
         user2 = user.dict()
         assert user != user2
 
@@ -85,3 +72,25 @@ class TestEntity(TestCase):
                 name: str = Field(
                     "John Doe", description="Users's name", default_factory=str
                 )
+
+    def test_schema(self):
+        assert self.cls.schema() == {
+            "title": "User",
+            "description": "Class that represents a User",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "title": "Id",
+                    "description": "User's id",
+                    "type": "string",
+                    "format": "ulid",
+                    "pattern": "^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$",
+                },
+                "name": {
+                    "title": "Name",
+                    "description": "Users's name",
+                    "type": "string",
+                },
+            },
+            "required": ["id", "name"],
+        }

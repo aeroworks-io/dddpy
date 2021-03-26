@@ -2,6 +2,7 @@ from unittest import TestCase
 
 import pytest
 
+from dddpy import Value
 from dddpy.bases.common.primitive import Primitive
 
 
@@ -22,6 +23,17 @@ class TestPrimitive(TestCase):
 
     def test_valid(self):
         assert self.cls("John Doe")
+
+    def test_schema(self):
+        class A(Value):
+            name: self.cls  # noqa
+
+        assert A.schema() == {
+            "properties": {"name": {"title": "Name", "type": "string"}},
+            "required": ["name"],
+            "title": "A",
+            "type": "object",
+        }
 
     def test_validator_invalid(self):
         with pytest.raises(TypeError):

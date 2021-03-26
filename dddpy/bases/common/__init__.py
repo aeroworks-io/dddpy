@@ -19,6 +19,8 @@ from .primitive import PrimitiveBase, Primitive
 
 
 class BaseClass(Restoreable, Generatable, JsonSerializable, BaseModel):
+    """"""
+
     class Config(BaseConfig):
         json_encoders = {JsonSerializable: lambda ins: ins.__json__()}
         alias_generator = partial(camelize, uppercase_first_letter=False)
