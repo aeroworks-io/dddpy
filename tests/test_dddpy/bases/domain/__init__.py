@@ -20,12 +20,18 @@ class IDTest(TestCase):
     def test_json(self):
         assert self.cls.__generate__().__json__()
 
+    def test_restore(self):
+        assert self.cls.__restore__("0123456789ABCDEFGHJKMNPQRS")
+
+    def test_from_bytes(self):
+        assert self.cls.from_bytes(b"\x00" * 16)
+
     def test_repr(self):
         assert repr(self.cls.__generate__())
 
     def test_validator_error(self):
-        with pytest.raises(TypeError):
-            self.cls.validate(str(self.cls()))
+        with pytest.raises(ValueError):
+            self.cls.validate(str())
 
 
 class TestEntity(TestCase):
@@ -82,9 +88,11 @@ class TestEntity(TestCase):
                 "id": {
                     "title": "Id",
                     "description": "User's id",
-                    "type": "string",
                     "format": "ulid",
-                    "pattern": "^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$",
+                    "type": "string",
+                    "minLength": 26,
+                    "maxLength": 26,
+                    "pattern": "^[0123456789abcdefghjkmnpqrstvwxyzABCDEFGHJKMNPQRSTVWXYZ]{26}$",
                 },
                 "name": {
                     "title": "Name",
@@ -93,4 +101,4 @@ class TestEntity(TestCase):
                 },
             },
             "required": ["id", "name"],
-        }
+        }, self.cls.schema()
