@@ -60,6 +60,9 @@ class Primitive(PrimitiveBase):
         return cls()
 
 
+_ulid_hash_obj = object()
+
+
 class ULID(_ULID, ConstrainedStr, PrimitiveBase):
     strip_whitespace = True
     min_length = 26
@@ -75,6 +78,9 @@ class ULID(_ULID, ConstrainedStr, PrimitiveBase):
 
     def __init__(self, *args, **kwargs):
         super(ULID, self).__init__(base32.decode(self), *args[1:], **kwargs)
+
+    def __hash__(self):
+        return hash((_ulid_hash_obj, self.bytes))
 
     @classmethod
     def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:

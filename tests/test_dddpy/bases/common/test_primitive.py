@@ -3,7 +3,7 @@ from unittest import TestCase
 import pytest
 
 from dddpy import Value
-from dddpy.bases.common.primitive import Primitive
+from dddpy.bases.common.primitive import Primitive, ULID
 
 
 class TestPrimitive(TestCase):
@@ -47,3 +47,9 @@ class TestPrimitive(TestCase):
 
     def test_json(self):
         assert self.cls.__generate__().__json__() == "John Doe"
+
+
+class TestULID(TestCase):
+    @staticmethod
+    def test_hash():
+        assert hash(ULID())
